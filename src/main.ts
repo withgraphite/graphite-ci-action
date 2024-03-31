@@ -75,23 +75,6 @@ async function requestAndCancelWorkflow({
     return
   }
 
-  const octokit = github.getOctokit(github_token)
-  const { GITHUB_RUN_ID } = process.env
-
-  const response = await octokit.rest.actions.cancelWorkflowRun({
-    owner,
-    repo,
-    run_id: Number(GITHUB_RUN_ID)
-  })
-
-  console.log(response)
-
-  await sleep(10)
-
-  if (!process.env.NEVER) {
-    return
-  }
-
   if (result.status !== 200) {
     core.warning(
       'Response returned a non-200 status. Skipping Graphite checks.'
@@ -105,14 +88,21 @@ async function requestAndCancelWorkflow({
     } = await result.json()
 
     if (body.skip) {
-      // const octokit = github.getOctokit(github_token)
-      // const { GITHUB_RUN_ID } = process.env
-      //
-      // await octokit.rest.actions.cancelWorkflowRun({
-      //   owner,
-      //   repo,
-      //   run_id: Number(GITHUB_RUN_ID)
-      // })
+      const octokit = github.getOctokit(github_token)
+      const { GITHUB_RUN_ID } = process.env
+
+      await octokit.rest.actions.cancelWorkflowRun({
+        owner,
+        repo,
+        run_id: Number(GITHUB_RUN_ID)
+      })
+
+      /**
+       * When you cancel the job, it takes a few seconds to register.
+       *
+       * Give the job a few seconds to get cancelled before continuing to the real work.
+       */
+      await sleep(10)
     }
   } catch {
     core.warning('Failed to parse response body. Skipping Graphite checks.')
