@@ -1,23 +1,28 @@
-name: 'The name of your action here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Graphite CI'
+description: 'Optimize CI on stacked branches.'
+author: 'Graphite'
 
-# Add your action's branding here. This will appear on the GitHub Marketplace.
 branding:
-  icon: 'heart'
-  color: 'red'
+  icon: 'layers'
+  color: 'gray-dark'
 
-# Define your inputs here.
 inputs:
-  milliseconds:
-    description: 'Your input description here'
+  github_token:
+    description: 'A GitHub secret to cancel the workflow'
     required: true
-    default: '1000'
+    default: ''
+  graphite_token:
+    description: 'Your Graphite CI secret'
+    required: true
+    default: ''
+  endpoint:
+    description: 'Your Graphite API endpoint'
+    default: 'https://app.graphite.dev'
+  timeout:
+    description: 'Timeout for the network request to Graphite (in seconds)'
+    default: '30'
 
-# Define your outputs here.
-outputs:
-  time:
-    description: 'Your output description here'
+outputs: {}
 
 runs:
   using: node20

@@ -1,21 +1,22 @@
 {
-  "name": "typescript-action",
-  "description": "GitHub Actions TypeScript template",
+  "name": "graphite-ci-action",
+  "description": "Optimize CI on stacked branches.",
   "version": "0.0.0",
-  "author": "",
+  "author": "Graphite",
   "private": true,
-  "homepage": "https://github.com/actions/typescript-action",
+  "homepage": "https://github.com/withgraphite/graphite-ci-action",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/typescript-action.git"
+    "url": "git+https://github.com/withgraphite/graphite-ci-action.git"
   },
   "bugs": {
-    "url": "https://github.com/actions/typescript-action/issues"
+    "url": "https://https://github.com/withgraphite/graphite-ci-action/issues"
   },
   "keywords": [
     "actions",
-    "node",
-    "setup"
+    "ci",
+    "graphite",
+    "stacking"
   ],
   "exports": {
     ".": "./dist/index.js"
@@ -24,18 +25,16 @@
     "node": ">=20"
   },
   "scripts": {
-    "bundle": "npm run format:write && npm run package",
+    "bundle": "yarn run format:write && yarn run package",
     "ci-test": "npx jest",
-    "coverage": "npx make-coverage-badge --output-path ./badges/coverage.svg",
     "format:write": "npx prettier --write .",
     "format:check": "npx prettier --check .",
-    "lint": "npx eslint . -c ./.github/linters/.eslintrc.yml",
+    "lint": "npx eslint . -c ./.eslintrc.yml",
     "package": "npx ncc build src/index.ts -o dist --source-map --license licenses.txt",
-    "package:watch": "npm run package -- --watch",
+    "package:watch": "yarn run package -- --watch",
     "test": "npx jest",
-    "all": "npm run format:write && npm run lint && npm run test && npm run coverage && npm run package"
+    "all": "yarn run format:write && yarn run lint && yarn run test && yarn run package"
   },
-  "license": "MIT",
   "jest": {
     "preset": "ts-jest",
     "verbose": true,
@@ -66,7 +65,8 @@
     ]
   },
   "dependencies": {
-    "@actions/core": "^1.10.1"
+    "@actions/core": "^1.10.1",
+    "@actions/github": "^1.10.1"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
