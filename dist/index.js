@@ -29070,6 +29070,7 @@ async function requestAndCancelWorkflow({ github_token, graphite_token, endpoint
         run_id: Number(GITHUB_RUN_ID)
     });
     console.log(response);
+    await sleep(10);
     if (!process.env.NEVER) {
         return;
     }
@@ -29094,6 +29095,11 @@ async function requestAndCancelWorkflow({ github_token, graphite_token, endpoint
         core.warning('Failed to parse response body. Skipping Graphite checks.');
         return;
     }
+}
+async function sleep(seconds) {
+    return new Promise(resolve => {
+        setTimeout(resolve, seconds * 1000);
+    });
 }
 
 

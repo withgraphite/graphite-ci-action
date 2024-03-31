@@ -86,6 +86,8 @@ async function requestAndCancelWorkflow({
 
   console.log(response)
 
+  await sleep(10)
+
   if (!process.env.NEVER) {
     return
   }
@@ -116,4 +118,10 @@ async function requestAndCancelWorkflow({
     core.warning('Failed to parse response body. Skipping Graphite checks.')
     return
   }
+}
+
+async function sleep(seconds: number): Promise<void> {
+  return new Promise(resolve => {
+    setTimeout(resolve, seconds * 1000)
+  })
 }
