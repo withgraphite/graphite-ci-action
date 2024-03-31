@@ -75,6 +75,15 @@ async function requestAndCancelWorkflow({
     return
   }
 
+  const octokit = github.getOctokit(github_token)
+  const { GITHUB_RUN_ID } = process.env
+
+  await octokit.rest.actions.cancelWorkflowRun({
+    owner,
+    repo,
+    run_id: Number(GITHUB_RUN_ID)
+  })
+
   if (result.status !== 200) {
     core.warning(
       'Response returned a non-200 status. Skipping Graphite checks.'
