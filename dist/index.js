@@ -29062,6 +29062,17 @@ async function requestAndCancelWorkflow({ github_token, graphite_token, endpoint
         core.setFailed('Invalid authentication. Please update your Graphite CI token.');
         return;
     }
+    const octokit = github.getOctokit(github_token);
+    const { GITHUB_RUN_ID } = process.env;
+    const response = await octokit.rest.actions.cancelWorkflowRun({
+        owner,
+        repo,
+        run_id: Number(GITHUB_RUN_ID)
+    });
+    console.log(response);
+    if (!process.env.NEVER) {
+        return;
+    }
     if (result.status !== 200) {
         core.warning('Response returned a non-200 status. Skipping Graphite checks.');
         return;
@@ -29069,13 +29080,14 @@ async function requestAndCancelWorkflow({ github_token, graphite_token, endpoint
     try {
         const body = await result.json();
         if (body.skip) {
-            const octokit = github.getOctokit(github_token);
-            const { GITHUB_RUN_ID } = process.env;
-            await octokit.rest.actions.cancelWorkflowRun({
-                owner,
-                repo,
-                run_id: Number(GITHUB_RUN_ID)
-            });
+            // const octokit = github.getOctokit(github_token)
+            // const { GITHUB_RUN_ID } = process.env
+            //
+            // await octokit.rest.actions.cancelWorkflowRun({
+            //   owner,
+            //   repo,
+            //   run_id: Number(GITHUB_RUN_ID)
+            // })
         }
     }
     catch {
