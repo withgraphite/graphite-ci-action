@@ -97,14 +97,14 @@ async function requestAndCancelWorkflow({
     } = await result.json()
 
     if (body.skip) {
-      const octokit = github.getOctokit(github_token)
-      const { GITHUB_RUN_ID } = process.env
-
-      await octokit.rest.actions.cancelWorkflowRun({
-        owner,
-        repo,
-        run_id: Number(GITHUB_RUN_ID)
-      })
+      // const octokit = github.getOctokit(github_token)
+      // const { GITHUB_RUN_ID } = process.env
+      //
+      // await octokit.rest.actions.cancelWorkflowRun({
+      //   owner,
+      //   repo,
+      //   run_id: Number(GITHUB_RUN_ID)
+      // })
     }
   } catch {
     core.warning('Failed to parse response body. Skipping Graphite checks.')
