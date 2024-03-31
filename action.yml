@@ -17,7 +17,7 @@ inputs:
     default: ''
   endpoint:
     description: 'Your Graphite API endpoint'
-    default: 'https://app.graphite.dev'
+    default: 'https://api.graphite.dev'
   timeout:
     description: 'Timeout for the network request to Graphite (in seconds)'
     default: '30'

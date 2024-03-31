@@ -17,6 +17,9 @@ Common optimizations include:
 steps:
   - name: Checkout
     uses: withgraphite/graphite-ci-action@main
+    with: 
+      github_token: ${{ secrets.GITHUB_TOKEN }}
+      graphite_token: "XXX"
 ```
 
 To instead use a
