@@ -31,7 +31,7 @@ jobs:
           cache: yarn
 
       - name: Install Dependencies
-        run: yarn ci
+        run: yarn install
 
       - name: Lint Codebase
         run: yarn lint

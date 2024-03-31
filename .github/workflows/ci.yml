@@ -27,7 +27,7 @@ jobs:
           cache: yarn
 
       - name: Install Dependencies
-        run: yarn ci
+        run: yarn install
 
       - name: Check Format
         run: yarn run format:check

@@ -36,7 +36,7 @@ jobs:
           cache: yarn
 
       - name: Install Dependencies
-        run: yarn ci
+        run: yarn install
 
       - name: Build dist/ Directory
         run: yarn run bundle
