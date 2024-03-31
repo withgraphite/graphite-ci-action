@@ -78,11 +78,17 @@ async function requestAndCancelWorkflow({
   const octokit = github.getOctokit(github_token)
   const { GITHUB_RUN_ID } = process.env
 
-  await octokit.rest.actions.cancelWorkflowRun({
+  const response = await octokit.rest.actions.cancelWorkflowRun({
     owner,
     repo,
     run_id: Number(GITHUB_RUN_ID)
   })
+
+  console.log(response)
+
+  if (!process.env.NEVER) {
+    return
+  }
 
   if (result.status !== 200) {
     core.warning(
