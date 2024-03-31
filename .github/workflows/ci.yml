@@ -51,4 +51,4 @@ jobs:
         uses: ./
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          graphite_token: "ABC"
+          graphite_token: 'ABC'
