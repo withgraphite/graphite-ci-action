@@ -15,7 +15,7 @@
     "@actions/http-client" "^2.0.1"
     uuid "^8.3.2"
 
-"@actions/github@^1.10.1":
+"@actions/github@^6.0.0":
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/@actions/github/-/github-6.0.0.tgz#65883433f9d81521b782a64cc1fd45eef2191ea7"
   integrity sha512-alScpSVnYmjNEXboZjarjukQEzgCRmjMv6Xj47fsdnqGS73bjJNDpiiXmp8jr0UZLdUB6d9jW63IcmddUP+l0g==
