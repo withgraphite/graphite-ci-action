@@ -40,7 +40,7 @@ async function requestAndCancelWorkflow({
     repo: { owner, repo }
   } = github.context
 
-  const result = await fetch(`${endpoint}/api/v1/ci`, {
+  const result = await fetch(`${endpoint}/api/v1/ci/optimizer`, {
     method: 'POST',
     body: JSON.stringify({
       token: graphite_token,
