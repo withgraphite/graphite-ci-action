@@ -36,6 +36,7 @@ async function requestAndCancelWorkflow({
   endpoint: string
   timeout: string
 }): Promise<void> {
+  console.log(github.context)
   const {
     repo: { owner, repo }
   } = github.context
@@ -77,7 +78,7 @@ async function requestAndCancelWorkflow({
 
   if (result.status !== 200) {
     core.warning(
-      'Response returned a non-200 status. Skipping Graphite checks.'
+      'Response returned a non-200 status! Skipping Graphite checks.'
     )
     return
   }
