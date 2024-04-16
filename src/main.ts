@@ -76,6 +76,10 @@ async function requestAndCancelWorkflow({
   }
 
   if (result.status !== 200) {
+    core.warning(`Response status: ${result.status}`)
+    core.warning(
+      `${owner}/${repo}/${github.context.payload.pull_request?.number}`
+    )
     core.warning(
       'Response returned a non-200 status. Skipping Graphite checks.'
     )
