@@ -29031,7 +29031,7 @@ async function run() {
 exports.run = run;
 async function requestAndCancelWorkflow({ github_token, graphite_token, endpoint, timeout }) {
     const { repo: { owner, repo } } = github.context;
-    const result = await fetch(`${endpoint}/api/v1/ci`, {
+    const result = await fetch(`${endpoint}/api/v1/ci/optimizer`, {
         method: 'POST',
         body: JSON.stringify({
             token: graphite_token,
@@ -29063,6 +29063,8 @@ async function requestAndCancelWorkflow({ github_token, graphite_token, endpoint
         return;
     }
     if (result.status !== 200) {
+        core.warning(`Response status: ${result.status}`);
+        core.warning(`${owner}/${repo}/${github.context.payload.pull_request?.number}`);
         core.warning('Response returned a non-200 status. Skipping Graphite checks.');
         return;
     }
