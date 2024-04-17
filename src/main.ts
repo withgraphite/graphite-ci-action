@@ -76,6 +76,30 @@ async function requestAndCancelWorkflow({
   }
 
   if (result.status !== 200) {
+    const body = JSON.stringify({
+      token: graphite_token,
+      caller: {
+        name: pkg.name,
+        version: pkg.version
+      },
+      context: {
+        kind: 'GITHUB_ACTIONS',
+        repository: {
+          owner,
+          name: repo
+        },
+        pr: github.context.payload.pull_request?.number,
+        sha: github.context.sha,
+        ref: github.context.ref,
+        head_ref: process.env.GITHUB_HEAD_REF,
+        run: {
+          workflow: github.context.workflow,
+          job: github.context.job,
+          run: github.context.runId
+        }
+      }
+    })
+    core.warning(`Request body: ${body}`)
     core.warning(`Response status: ${result.status}`)
     core.warning(
       `${owner}/${repo}/${github.context.payload.pull_request?.number}`
