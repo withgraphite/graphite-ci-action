@@ -29011,12 +29011,10 @@ const pkg = __importStar(__nccwpck_require__(4147));
  */
 async function run() {
     try {
-        const github_token = core.getInput('github_token');
         const graphite_token = core.getInput('graphite_token');
         const endpoint = core.getInput('endpoint');
         const timeout = core.getInput('timeout');
-        await requestAndCancelWorkflow({
-            github_token,
+        await requestWorkflow({
             graphite_token,
             endpoint,
             timeout
@@ -29029,7 +29027,7 @@ async function run() {
     }
 }
 exports.run = run;
-async function requestAndCancelWorkflow({ github_token, graphite_token, endpoint, timeout }) {
+async function requestWorkflow({ graphite_token, endpoint, timeout }) {
     const { repo: { owner, repo } } = github.context;
     const result = await fetch(`${endpoint}/api/v1/ci/optimizer`, {
         method: 'POST',
@@ -29059,7 +29057,8 @@ async function requestAndCancelWorkflow({ github_token, graphite_token, endpoint
         signal: AbortSignal.timeout(parseInt(timeout, 10) * 1000)
     });
     if (result.status === 401) {
-        core.setFailed('Invalid authentication. Please update your Graphite CI token.');
+        core.warning('Invalid authentication. Skipping Graphite checks.');
+        core.setOutput('skip', false);
         return;
     }
     if (result.status !== 200) {
@@ -29090,35 +29089,18 @@ async function requestAndCancelWorkflow({ github_token, graphite_token, endpoint
         core.warning(`Response status: ${result.status}`);
         core.warning(`${owner}/${repo}/${github.context.payload.pull_request?.number}`);
         core.warning('Response returned a non-200 status. Skipping Graphite checks.');
+        core.setOutput('skip', false);
         return;
     }
     try {
         const body = await result.json();
-        if (body.skip) {
-            const octokit = github.getOctokit(github_token);
-            const { GITHUB_RUN_ID } = process.env;
-            await octokit.rest.actions.cancelWorkflowRun({
-                owner,
-                repo,
-                run_id: Number(GITHUB_RUN_ID)
-            });
-            /**
-             * When you cancel the job, it takes a few seconds to register.
-             *
-             * Give the job a few seconds to get cancelled before continuing to the real work.
-             */
-            await sleep(10);
-        }
+        core.setOutput('skip', body.skip);
+        core.info(body.reason);
     }
     catch {
         core.warning('Failed to parse response body. Skipping Graphite checks.');
         return;
     }
-}
-async function sleep(seconds) {
-    return new Promise(resolve => {
-        setTimeout(resolve, seconds * 1000);
-    });
 }
 
 
