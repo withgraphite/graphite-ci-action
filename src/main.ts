@@ -8,13 +8,11 @@ import * as pkg from '../package.json'
  */
 export async function run(): Promise<void> {
   try {
-    const github_token: string = core.getInput('github_token')
     const graphite_token: string = core.getInput('graphite_token')
     const endpoint: string = core.getInput('endpoint')
     const timeout: string = core.getInput('timeout')
 
-    await requestAndCancelWorkflow({
-      github_token,
+    await requestWorkflow({
       graphite_token,
       endpoint,
       timeout
@@ -25,13 +23,11 @@ export async function run(): Promise<void> {
   }
 }
 
-async function requestAndCancelWorkflow({
-  github_token,
+async function requestWorkflow({
   graphite_token,
   endpoint,
   timeout
 }: {
-  github_token: string
   graphite_token: string
   endpoint: string
   timeout: string
@@ -69,9 +65,8 @@ async function requestAndCancelWorkflow({
   })
 
   if (result.status === 401) {
-    core.setFailed(
-      'Invalid authentication. Please update your Graphite CI token.'
-    )
+    core.warning('Invalid authentication. Skipping Graphite checks.')
+    core.setOutput('skip', false)
     return
   }
 
@@ -107,39 +102,20 @@ async function requestAndCancelWorkflow({
     core.warning(
       'Response returned a non-200 status. Skipping Graphite checks.'
     )
+    core.setOutput('skip', false)
     return
   }
 
   try {
     const body: {
       skip: boolean
+      reason: string
     } = await result.json()
 
-    if (body.skip) {
-      const octokit = github.getOctokit(github_token)
-      const { GITHUB_RUN_ID } = process.env
-
-      await octokit.rest.actions.cancelWorkflowRun({
-        owner,
-        repo,
-        run_id: Number(GITHUB_RUN_ID)
-      })
-
-      /**
-       * When you cancel the job, it takes a few seconds to register.
-       *
-       * Give the job a few seconds to get cancelled before continuing to the real work.
-       */
-      await sleep(10)
-    }
+    core.setOutput('skip', body.skip)
+    core.info(body.reason)
   } catch {
     core.warning('Failed to parse response body. Skipping Graphite checks.')
     return
   }
-}
-
-async function sleep(seconds: number): Promise<void> {
-  return new Promise(resolve => {
-    setTimeout(resolve, seconds * 1000)
-  })
 }
