@@ -29061,6 +29061,11 @@ async function requestWorkflow({ graphite_token, endpoint, timeout }) {
         core.setOutput('skip', false);
         return;
     }
+    if (result.status === 402) {
+        core.warning('Your Graphite plan does not support the CI Optimizer. Please upgrade your plan to use this feature.');
+        core.setOutput('skip', false);
+        return;
+    }
     if (result.status !== 200) {
         const body = JSON.stringify({
             token: graphite_token,
