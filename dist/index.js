@@ -29066,6 +29066,11 @@ async function requestWorkflow({ graphite_token, endpoint, timeout }) {
         core.setOutput('skip', false);
         return;
     }
+    if (github.context.eventName === 'workflow_dispatch') {
+        core.info('Workflow dispatch event detected. Skipping Graphite checks.');
+        core.setOutput('skip', false);
+        return;
+    }
     if (result.status !== 200) {
         const body = JSON.stringify({
             token: graphite_token,
