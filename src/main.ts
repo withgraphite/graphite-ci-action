@@ -11,11 +11,13 @@ export async function run(): Promise<void> {
     const graphite_token: string = core.getInput('graphite_token')
     const endpoint: string = core.getInput('endpoint')
     const timeout: string = core.getInput('timeout')
+    const pr_number_input: string = core.getInput('pr_number')
 
     await requestWorkflow({
       graphite_token,
       endpoint,
-      timeout
+      timeout,
+      pr_number_input
     })
   } catch (error) {
     // Fail the workflow run if an error occurs
@@ -26,15 +28,22 @@ export async function run(): Promise<void> {
 async function requestWorkflow({
   graphite_token,
   endpoint,
-  timeout
+  timeout,
+  pr_number_input
 }: {
   graphite_token: string
   endpoint: string
   timeout: string
+  pr_number_input: string
 }): Promise<void> {
   const {
     repo: { owner, repo }
   } = github.context
+
+  // Use pr_number input if provided, otherwise fall back to pull_request context
+  const prNumber = pr_number_input
+    ? parseInt(pr_number_input, 10)
+    : github.context.payload.pull_request?.number
 
   const result = await fetch(`${endpoint}/api/v1/ci/optimizer`, {
     method: 'POST',
@@ -50,7 +59,7 @@ async function requestWorkflow({
           owner,
           name: repo
         },
-        pr: github.context.payload.pull_request?.number,
+        pr: prNumber,
         sha: github.context.sha,
         ref: github.context.ref,
         head_ref: process.env.GITHUB_HEAD_REF,
@@ -97,7 +106,7 @@ async function requestWorkflow({
           owner,
           name: repo
         },
-        pr: github.context.payload.pull_request?.number,
+        pr: prNumber,
         sha: github.context.sha,
         ref: github.context.ref,
         head_ref: process.env.GITHUB_HEAD_REF,
@@ -110,9 +119,7 @@ async function requestWorkflow({
     })
     core.warning(`Request body: ${body}`)
     core.warning(`Response status: ${result.status}`)
-    core.warning(
-      `${owner}/${repo}/${github.context.payload.pull_request?.number}`
-    )
+    core.warning(`${owner}/${repo}/${prNumber}`)
     core.warning(
       'Response returned a non-200 status. Skipping Graphite checks.'
     )

@@ -29014,10 +29014,12 @@ async function run() {
         const graphite_token = core.getInput('graphite_token');
         const endpoint = core.getInput('endpoint');
         const timeout = core.getInput('timeout');
+        const pr_number_input = core.getInput('pr_number');
         await requestWorkflow({
             graphite_token,
             endpoint,
-            timeout
+            timeout,
+            pr_number_input
         });
     }
     catch (error) {
@@ -29027,8 +29029,12 @@ async function run() {
     }
 }
 exports.run = run;
-async function requestWorkflow({ graphite_token, endpoint, timeout }) {
+async function requestWorkflow({ graphite_token, endpoint, timeout, pr_number_input }) {
     const { repo: { owner, repo } } = github.context;
+    // Use pr_number input if provided, otherwise fall back to pull_request context
+    const prNumber = pr_number_input
+        ? parseInt(pr_number_input, 10)
+        : github.context.payload.pull_request?.number;
     const result = await fetch(`${endpoint}/api/v1/ci/optimizer`, {
         method: 'POST',
         body: JSON.stringify({
@@ -29043,7 +29049,7 @@ async function requestWorkflow({ graphite_token, endpoint, timeout }) {
                     owner,
                     name: repo
                 },
-                pr: github.context.payload.pull_request?.number,
+                pr: prNumber,
                 sha: github.context.sha,
                 ref: github.context.ref,
                 head_ref: process.env.GITHUB_HEAD_REF,
@@ -29084,7 +29090,7 @@ async function requestWorkflow({ graphite_token, endpoint, timeout }) {
                     owner,
                     name: repo
                 },
-                pr: github.context.payload.pull_request?.number,
+                pr: prNumber,
                 sha: github.context.sha,
                 ref: github.context.ref,
                 head_ref: process.env.GITHUB_HEAD_REF,
@@ -29097,7 +29103,7 @@ async function requestWorkflow({ graphite_token, endpoint, timeout }) {
         });
         core.warning(`Request body: ${body}`);
         core.warning(`Response status: ${result.status}`);
-        core.warning(`${owner}/${repo}/${github.context.payload.pull_request?.number}`);
+        core.warning(`${owner}/${repo}/${prNumber}`);
         core.warning('Response returned a non-200 status. Skipping Graphite checks.');
         core.setOutput('skip', false);
         return;

@@ -18,6 +18,9 @@ inputs:
   endpoint:
     description: 'Your Graphite API endpoint'
     default: 'https://api.graphite.dev'
+  pr_number:
+    description: 'The pull request number to optimize'
+    default: ''
   timeout:
     description: 'Timeout for the network request to Graphite (in seconds)'
     default: '30'
