@@ -20,8 +20,15 @@ export async function run(): Promise<void> {
       pr_number_input
     })
   } catch (error) {
-    // Fail the workflow run if an error occurs
-    if (error instanceof Error) core.setFailed(error.message)
+    // Fail open: if Graphite cannot be reached (network error, DNS failure,
+    // TLS interception, request timeout, etc.), default to running checks
+    // rather than blocking the workflow. This mirrors the behavior of every
+    // non-200 response path in requestWorkflow.
+    const message = error instanceof Error ? error.message : String(error)
+    core.warning(
+      `Could not reach the Graphite CI optimizer; running checks by default. (${message})`
+    )
+    core.setOutput('skip', false)
   }
 }
 
@@ -137,6 +144,7 @@ async function requestWorkflow({
     core.info(body.reason)
   } catch {
     core.warning('Failed to parse response body. Skipping Graphite checks.')
+    core.setOutput('skip', false)
     return
   }
 }
