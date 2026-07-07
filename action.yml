@@ -7,10 +7,6 @@ branding:
   color: 'gray-dark'
 
 inputs:
-  github_token:
-    description: 'A GitHub secret to cancel the workflow'
-    required: true
-    default: ''
   graphite_token:
     description: 'Your Graphite CI secret'
     required: true
