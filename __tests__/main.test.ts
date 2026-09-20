@@ -68,6 +68,34 @@ describe('run', () => {
     expect(setOutputMock).toHaveBeenCalledWith('skip', false)
   })
 
+  it('never logs the Graphite token when the optimizer rejects a request', async () => {
+    const token = 'secret-graphite-token'
+    jest.spyOn(core, 'getInput').mockImplementation((name: string) => {
+      switch (name) {
+        case 'graphite_token':
+          return token
+        case 'endpoint':
+          return 'https://api.graphite.dev'
+        case 'timeout':
+          return '30'
+        case 'pr_number':
+          return ''
+        default:
+          return ''
+      }
+    })
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      status: 500
+    } as Response)
+
+    await run()
+
+    const warningText = warningMock.mock.calls.flat().join('\n')
+    expect(warningText).not.toContain(token)
+    expect(warningText).not.toContain('Request body:')
+    expect(setOutputMock).toHaveBeenCalledWith('skip', false)
+  })
+
   it('respects the optimizer decision on a successful response', async () => {
     jest.spyOn(global, 'fetch').mockResolvedValue({
       status: 200,
